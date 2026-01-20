@@ -42,16 +42,6 @@ public sealed class Sale : AggregateRoot
     public DateTime SaleDate { get; private set; }
 
     /// <summary>
-    /// Gets the date when the sale entity was created.
-    /// </summary>
-    public DateTime CreatedAt { get; private set; }
-
-    /// <summary>
-    /// Gets the date and time of the last update to the sale's information.
-    /// </summary>
-    public DateTime? UpdatedAt { get; private set; }
-
-    /// <summary>
     /// Gets the branch id
     /// Must not be empty.
     /// </summary>
@@ -62,6 +52,16 @@ public sealed class Sale : AggregateRoot
     /// Must not be null or empty.
     /// </summary>
     public string BranchName { get; private set; }
+
+    /// <summary>
+    /// Gets the date when the sale entity was created.
+    /// </summary>
+    public DateTime CreatedAt { get; private set; }
+
+    /// <summary>
+    /// Gets the date and time of the last update to the sale's information.
+    /// </summary>
+    public DateTime? UpdatedAt { get; private set; }
 
     /// <summary>
     /// Gets the sale status.
@@ -78,7 +78,7 @@ public sealed class Sale : AggregateRoot
     /// <summary>
     /// Gets the total amount.
     /// </summary>
-    public Money TotalAmount => Money.Create(_items.Sum(l => l.UnitPrice.Value * l.Quantity));
+    public Money TotalAmount => Money.Create(_items.Sum(l => l.TotalAmount.Value));
 
     private readonly List<SaleItem> _items = new();
 
@@ -91,8 +91,7 @@ public sealed class Sale : AggregateRoot
     {
     }
 
-    public Sale(string saleNumber, Guid customerId, string customerName, DateTime saleDate, Guid branchId,
-        string branchName)
+    public Sale(string saleNumber, Guid customerId, string customerName, DateTime saleDate, Guid branchId, string branchName)
     {
         if (saleDate > DateTime.UtcNow)
             throw new DomainException("Sale date cannot be in the future");
@@ -115,7 +114,7 @@ public sealed class Sale : AggregateRoot
 
     public void AddItem(Guid productId, string productName, int quantity, Money unitPrice)
     {
-        var existingItem = _items.FirstOrDefault(i => i.ProductId == productId);
+        var existingItem = _items.FirstOrDefault(l => l.ProductId == productId && l.Status != SaleItemStatus.Cancelled);
 
         var totalQuantity = existingItem is null ? quantity : existingItem.Quantity + quantity;
 
@@ -129,7 +128,7 @@ public sealed class Sale : AggregateRoot
             var item = new SaleItem(
                 productId,
                 productName,
-                quantity,
+                totalQuantity,
                 unitPrice,
                 discountPercentage);
 
@@ -137,10 +136,56 @@ public sealed class Sale : AggregateRoot
         }
         else
         {
-            existingItem.UpdateQuantityAndDiscount(quantity, discountPercentage);
+            existingItem.UpdateQuantityAndDiscount(totalQuantity, discountPercentage);
         }
     }
 
+    public void UpdateItem(Guid id, Guid productId, string productName, int quantity, Money unitPrice)
+    {
+        var existingItem = _items.FirstOrDefault(i => i.Id == id);
+
+        if (existingItem is null)
+            throw new DomainException($"Item {id} not found.");
+
+        if (existingItem.Status is SaleItemStatus.Cancelled)
+            throw new DomainException("Item is cancelled and cannot be updated.");
+        
+        var existingItemProduct = _items.FirstOrDefault(i => i.ProductId == productId && i.Id != id);
+
+        if (quantity > 20)
+            throw new DomainException("Cannot sell more than 20 identical items.");
+
+        var discountPercentage = CalculateDiscount(quantity);
+
+        existingItem.Update(quantity, discountPercentage, productId, productName, unitPrice);
+        
+        if (existingItemProduct is not null)
+        {
+            existingItemProduct.Cancel();
+        }
+    }
+
+    public void CancelItem(Guid id)
+    {
+        var existingItem = _items.FirstOrDefault(i => i.Id == id);
+        if (existingItem is null)
+            throw new DomainException($"Item {id} not found.");
+
+        if (existingItem.Status == SaleItemStatus.Cancelled)
+            return;
+        
+        existingItem.Cancel();
+    }
+
+    public void Update(string saleNumber, Guid customerId, string customerName)
+    {
+        SaleNumber = saleNumber;
+        CustomerId = customerId;
+        CustomerName = customerName;
+        
+        AddDomainEvent(new SaleUpdatedDomainEvent(Id, CustomerId));
+    }
+    
     private static Percentage CalculateDiscount(int quantity)
     {
         if (quantity is >= 10 and <= 20)
@@ -155,10 +200,10 @@ public sealed class Sale : AggregateRoot
     public void Cancel()
     {
         if (Status == SaleStatus.Cancelled)
-            return;
+            throw new DomainException("The sale is already cancelled.");
 
         Status = SaleStatus.Cancelled;
 
-        AddDomainEvent(new SaleCancelledEvent(Id));
+        AddDomainEvent(new SaleCancelledDomainEvent(Id));
     }
 }

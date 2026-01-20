@@ -1,9 +1,11 @@
 using Ambev.DeveloperEvaluation.Application;
+using Ambev.DeveloperEvaluation.Application.Read;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
+using Ambev.DeveloperEvaluation.Messaging.Outbox;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.Interceptors;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
@@ -11,6 +13,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using FluentValidation;
+using Microsoft.Extensions.Azure;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -30,11 +33,12 @@ public class Program
 
             builder.AddBasicHealthChecks();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddHostedService<OutboxProcessor>();
 
             builder.Services.AddDbContext<DefaultContext>((sp, options) =>
                 {
                     var mediatr = sp.GetRequiredService<IMediator>();
-                    
+
                     options.UseNpgsql(
                             builder.Configuration.GetConnectionString("DefaultConnection"),
                             b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
@@ -47,16 +51,17 @@ public class Program
 
             builder.RegisterDependencies();
 
-            builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
+            builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly, typeof(ApplicationReadLayer).Assembly);
 
             builder.Services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssemblies(
-                    typeof(ApplicationLayer).Assembly
+                    typeof(ApplicationLayer).Assembly, typeof(ApplicationReadLayer).Assembly
                 );
             });
 
             builder.Services.AddValidatorsFromAssembly(typeof(ApplicationLayer).Assembly);
+            builder.Services.AddValidatorsFromAssembly(typeof(ApplicationReadLayer).Assembly);
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             var app = builder.Build();

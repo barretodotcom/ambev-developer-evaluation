@@ -3,7 +3,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 /// <summary>
 /// Represents a request to create a new sale item in the system.
 /// </summary>
-public sealed record CreateSaleItemRequest
+public record CreateSaleItemRequest
 {
     /// <summary>
     /// Gets or sets the product id.

@@ -6,15 +6,11 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 /// <remarks>
 /// This response contains the unique identifier of the newly created sale.
 /// </remarks>
-public class CreateSaleResult
+public record CreateSaleResult
 {
     /// <summary>
-    /// Gets or sets the unique identifier of the newly created user.
+    /// Gets or sets the unique identifier of the newly created sale.
     /// </summary>
-    /// <value>A GUID that uniquely identifies the created user in the system.</value>
-    public Guid SaleId { get; set; }
-
-    private CreateSaleResult()
-    {
-    }
+    /// <value>A GUID that uniquely identifies the created sale in the system.</value>
+    public Guid Id { get; init; }
 }

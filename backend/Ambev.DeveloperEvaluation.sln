@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{77C73D0D-E122-4C65-B63B-B89C8E28F69E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aplication", "Aplication", "{7DC3E4B1-675C-4122-AA58-4BCBA06C4A82}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{7DC3E4B1-675C-4122-AA58-4BCBA06C4A82}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Crosscutting", "Crosscutting", "{040F270A-3788-4E88-99A6-F236286DE3E7}"
 EndProject
@@ -54,7 +54,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ambev.DeveloperEvaluation.Messaging", "Ambev.DeveloperEvaluation.Messaging\Ambev.DeveloperEvaluation.Messaging.csproj", "{73226964-C200-4EA1-A1DA-D35A545D3D03}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ambev.DeveloperEvaluation.Messaging", "src\Ambev.DeveloperEvaluation.Messaging\Ambev.DeveloperEvaluation.Messaging.csproj", "{73226964-C200-4EA1-A1DA-D35A545D3D03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ambev.DeveloperEvaluation.Application.Read", "src\Ambev.DeveloperEvaluation.Application.Read\Ambev.DeveloperEvaluation.Application.Read.csproj", "{92FFB627-E123-4492-9570-AC3B2A296FAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,6 +108,10 @@ Global
 		{73226964-C200-4EA1-A1DA-D35A545D3D03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73226964-C200-4EA1-A1DA-D35A545D3D03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73226964-C200-4EA1-A1DA-D35A545D3D03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92FFB627-E123-4492-9570-AC3B2A296FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92FFB627-E123-4492-9570-AC3B2A296FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92FFB627-E123-4492-9570-AC3B2A296FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92FFB627-E123-4492-9570-AC3B2A296FAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,6 +136,7 @@ Global
 		{C0DDDE39-2D65-4AF5-90D4-F35D87A79009} = {040F270A-3788-4E88-99A6-F236286DE3E7}
 		{2B484022-3EF7-4BAB-ADB8-849F9E419EDD} = {C8926C5D-2F67-4F90-982B-FFB45F517D65}
 		{73226964-C200-4EA1-A1DA-D35A545D3D03} = {BD3812F8-8783-42C6-B231-8A032EF9481F}
+		{92FFB627-E123-4492-9570-AC3B2A296FAE} = {7DC3E4B1-675C-4122-AA58-4BCBA06C4A82}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {13EAB81A-C6B2-4C22-B4DE-C6603FC445B6}

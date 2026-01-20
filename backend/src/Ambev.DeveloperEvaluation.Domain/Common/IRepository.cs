@@ -28,4 +28,12 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>True if the entity was deleted, false if not found</returns>
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates an existing entity in the database.
+    /// </summary>
+    /// <param name="entity">
+    /// The entity instance containing the updated data.
+    /// </param>
+    void Update(TEntity entity);
 }

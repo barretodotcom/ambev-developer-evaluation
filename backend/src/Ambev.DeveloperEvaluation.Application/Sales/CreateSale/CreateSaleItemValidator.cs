@@ -19,11 +19,14 @@ public class CreateSaleItemValidator : AbstractValidator<CreateSaleItemCommand>
     /// </remarks>
     public CreateSaleItemValidator()
     {
-        RuleFor(l => l.ProductId).NotEmpty();
+        RuleFor(l => l.ProductId)
+            .NotEmpty();
         RuleFor(l => l.ProductName)
             .NotEmpty();
         
-        RuleFor(l => l.Quantity).GreaterThan(0);
-        RuleFor(l => l.UnitPrice).GreaterThan(0);
+        RuleFor(l => l.Quantity)
+            .GreaterThan(0);
+        RuleFor(l => l.UnitPrice)
+            .GreaterThan(0);
     }
 }

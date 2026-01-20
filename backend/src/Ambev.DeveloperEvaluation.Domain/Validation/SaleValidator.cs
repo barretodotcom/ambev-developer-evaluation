@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Domain.Validation;
 
-public class SaleValidator : AbstractValidator<Sale>
+public sealed class SaleValidator : AbstractValidator<Sale>
 {
     public SaleValidator()
     {

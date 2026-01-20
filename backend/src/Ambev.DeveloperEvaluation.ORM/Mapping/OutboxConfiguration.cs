@@ -4,34 +4,39 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Ambev.DeveloperEvaluation.ORM.Mapping;
 
-public sealed class OutboxConfiguration : IEntityTypeConfiguration<Outbox>
+public sealed class OutboxConfiguration : IEntityTypeConfiguration<OutboxEntity>
 {
-    public void Configure(EntityTypeBuilder<Outbox> builder)
+    public void Configure(EntityTypeBuilder<OutboxEntity> builder)
     {
-        builder.ToTable("Outbox");
+        builder.ToTable("outbox");
 
-        builder.HasKey(l => l.Id);
+        builder.HasKey(o => o.Id);
 
-        builder.Property(l => l.Id)
+        builder.Property(o => o.Id)
+            .HasColumnName("id")
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("gen_random_uuid()");
 
-        builder.Property(l => l.Type)
+        builder.Property(o => o.Type)
+            .HasColumnName("type")
             .IsRequired()
             .HasMaxLength(250);
 
-        builder.Property(l => l.Payload)
+        builder.Property(o => o.Payload)
+            .HasColumnName("payload")
             .IsRequired()
             .HasColumnType("jsonb");
 
-        builder.Property(l => l.OccurredOn)
+        builder.Property(o => o.OccurredOn)
+            .HasColumnName("occurred_on")
             .IsRequired();
 
-        builder.Property(l => l.ProcessedOn);
+        builder.Property(o => o.ProcessedOn)
+            .HasColumnName("processed_on");
 
-        builder.HasIndex(l => new { l.OccurredOn, l.ProcessedOn })
-            .HasDatabaseName("idx_outbox_messages_unprocessed")
-            .HasFilter("\"ProcessedOn\" IS NULL")
-            .IncludeProperties(l => new { l.Id, l.Type, l.Payload });
+        builder.HasIndex(o => new { o.OccurredOn, o.ProcessedOn })
+            .HasDatabaseName("idx_outbox_unprocessed")
+            .HasFilter("processed_on IS NULL")
+            .IncludeProperties(o => new { o.Id, o.Type, o.Payload });
     }
 }

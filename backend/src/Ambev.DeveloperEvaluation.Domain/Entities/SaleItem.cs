@@ -40,12 +40,17 @@ public sealed class SaleItem : BaseEntity
     /// <summary>
     /// Gets or sets the product unit price
     /// </summary>
-    public Money TotalAmount => Money.Create(UnitPrice.Value * Quantity);
+    public Money TotalAmount => Money.Create((UnitPrice.Value * Quantity) * (1m - DiscountPercentage.Value));
 
     /// <summary>
     /// Gets the date and time when the sale item was created.
     /// </summary>
     public DateTime CreatedAt { get; private set; }
+
+    /// <summary>
+    /// Gets the date and time when this sale item was last updated.
+    /// </summary>
+    public DateTime? UpdatedAt { get; private set; }
 
     private SaleItem()
     {
@@ -54,10 +59,10 @@ public sealed class SaleItem : BaseEntity
     public SaleItem(Guid productId, string productName, int quantity, Money unitPrice, Percentage discountPercentage)
     {
         Id = Guid.NewGuid();
-        
+
         ProductId = productId;
         ProductName = productName;
-        
+
         Quantity = quantity;
         UnitPrice = unitPrice;
         DiscountPercentage = discountPercentage;
@@ -68,7 +73,30 @@ public sealed class SaleItem : BaseEntity
 
     public void UpdateQuantityAndDiscount(int quantity, Percentage discountPercentage)
     {
-        Quantity += quantity;
+        Quantity = quantity;
         DiscountPercentage = discountPercentage;
+        Updated();
     }
+
+    public void Update(int quantity, Percentage discountPercentage, Guid productId, string productName, Money unitPrice)
+    {
+        Quantity = quantity;
+        DiscountPercentage = discountPercentage;
+        ProductId = productId;
+        ProductName = productName;
+        UnitPrice = unitPrice;
+        Updated();
+    }
+
+    public void Cancel()
+    {
+        Status = SaleItemStatus.Cancelled;
+        Updated();
+    }
+
+    private void Updated()
+    {
+        UpdatedAt = DateTime.UtcNow;
+    }
+
 }

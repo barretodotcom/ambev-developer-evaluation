@@ -3,15 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 
-public abstract class Repository<T> : IRepository<T> where T : BaseEntity
+public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
 {
-    private readonly DefaultContext _context;
-    protected readonly DbSet<T> DbSet;
+    protected readonly DbSet<TEntity> DbSet;
 
     public Repository(DefaultContext context)
     {
-        _context = context;
-        DbSet = _context.Set<T>();
+        DbSet = context.Set<TEntity>();
     }
     
     /// <summary>
@@ -20,11 +18,10 @@ public abstract class Repository<T> : IRepository<T> where T : BaseEntity
     /// <param name="entity">The entity to create</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created entity</returns>
-    public async Task<T> CreateAsync(T entity, CancellationToken cancellationToken)
+    public async Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken)
     {
         await DbSet.AddAsync(entity, cancellationToken);
         
-        await _context.SaveChangesAsync(cancellationToken);
         
         return entity;
     }
@@ -35,7 +32,7 @@ public abstract class Repository<T> : IRepository<T> where T : BaseEntity
     /// <param name="id">The unique identifier of the entity</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The entity if found, null otherwise</returns>
-    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await DbSet.FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
     }
@@ -52,7 +49,17 @@ public abstract class Repository<T> : IRepository<T> where T : BaseEntity
         if (entity == null) return false;
 
         DbSet.Remove(entity);
-        await _context.SaveChangesAsync(cancellationToken);
         return true;
+    }
+
+    /// <summary>
+    /// Updates an existing entity in the database.
+    /// </summary>
+    /// <param name="entity">
+    /// The entity instance containing the updated data.
+    /// </param>
+    public void Update(TEntity entity)
+    {
+        DbSet.Update(entity);
     }
 }

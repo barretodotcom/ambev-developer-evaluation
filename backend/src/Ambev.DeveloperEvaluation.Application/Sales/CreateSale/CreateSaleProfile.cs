@@ -4,15 +4,15 @@ using AutoMapper;
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
 /// <summary>
-/// Profile for mapping between Application and Domain CreateSale requests/responses
+/// Profile for mapping between Application and Domain CreateSale request/response
 /// </summary>
 public class CreateSaleProfile : Profile
 {
+    /// <summary>
+    /// Initializes the mappings for CreateSale operation
+    /// </summary>
     public CreateSaleProfile()
     {
-        CreateMap<Sale, CreateSaleResult>()
-            .ForMember(
-                dest => dest.SaleId,
-                src => src.MapFrom(s => s.Id));
+        CreateMap<Sale, CreateSaleResult>();
     }
 }
