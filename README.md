@@ -255,7 +255,3 @@ Published when a sale is cancelled.
 - `saleId`: The cancelled sale ID
 
 <br>
-<div style="display: flex; justify-content: space-between;">
-  <a href="./products-api.md">Previous: Products API</a>
-  <a href="./carts-api.md">Next: Carts API</a>
-</div>
