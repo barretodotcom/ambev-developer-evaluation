@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.Integration.Sales.CreateSale;
 
-public class CreateSaleIntegrationTests : IntegrationTestBase
+public class CreateSaleTests : IntegrationTestBase
 {
     [Fact]
     public async Task Should_Create_Sale_And_Persist_In_Database()

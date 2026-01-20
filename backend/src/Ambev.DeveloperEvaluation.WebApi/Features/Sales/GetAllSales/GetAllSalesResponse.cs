@@ -3,7 +3,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetAllSales;
 /// <summary>
 /// Represents the response returned after successfully get sales.
 /// </summary>
-public sealed record GetAllSalesResponse
+public record GetAllSalesResponse
 {
     /// <summary>
     /// Gets the sale unique identifier.

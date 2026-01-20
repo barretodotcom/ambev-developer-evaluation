@@ -4,7 +4,7 @@ using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Bogus;
 
-namespace Ambev.DeveloperEvaluation.Integration.Sales.UpdateSale;
+namespace Ambev.DeveloperEvaluation.Functional.Sales.UpdateSale;
 
 public class UpdateSaleTestData
 {
@@ -37,38 +37,38 @@ public class UpdateSaleTestData
 
         return sale;
     }
-
+    
     public static UpdateSaleCommand GenerateValidCommandFromExistingSale(Sale sale)
     {
         var existingItem = sale.Items.First();
-        
+
         var command = new UpdateSaleCommand()
         {
             Id = sale.Id,
-            SaleNumber = "SALE-UPDATED-001",
+            SaleNumber = $"SALE-{Faker.Random.AlphaNumeric(6).ToUpper()}",
             CustomerId = sale.CustomerId,
-            CustomerName = "Updated Customer",
-            Items =      new List<UpdateSaleItemCommand>()
+            CustomerName = Faker.Person.FullName,
+            Items = new List<UpdateSaleItemCommand>()
             {
-                new()
+                new UpdateSaleItemCommand
                 {
                     Operation = UpdateSaleItemOperation.Update,
                     Id = existingItem.Id,
                     ProductId = existingItem.ProductId,
-                    ProductName = "Updated Product",
-                    Quantity = 10,
-                    UnitPrice = 100
+                    ProductName = Faker.Commerce.ProductName(),
+                    Quantity = Faker.Random.Int(1, 20),
+                    UnitPrice = Faker.Finance.Amount(10, 500)
                 },
-                new()
+                new UpdateSaleItemCommand
                 {
                     Operation = UpdateSaleItemOperation.Create,
                     Id = null,
                     ProductId = Guid.NewGuid(),
-                    ProductName = "New Product",
-                    Quantity = 5,
-                    UnitPrice = 50
+                    ProductName = Faker.Commerce.ProductName(),
+                    Quantity = Faker.Random.Int(1, 10),
+                    UnitPrice = Faker.Finance.Amount(5, 200)
                 },
-                new()
+                new UpdateSaleItemCommand
                 {
                     Operation = UpdateSaleItemOperation.Cancel,
                     Id = existingItem.Id,
@@ -77,7 +77,7 @@ public class UpdateSaleTestData
                     Quantity = existingItem.Quantity,
                     UnitPrice = existingItem.UnitPrice.Value
                 }
-            },
+            }
         };
 
         return command;

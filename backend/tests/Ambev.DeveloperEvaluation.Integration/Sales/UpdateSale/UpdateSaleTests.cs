@@ -16,45 +16,7 @@ public class UpdateSaleIntegrationTests : IntegrationTestBase
         DbContext.Sales.Add(sale);
         await DbContext.SaveChangesAsync();
 
-        var existingItem = sale.Items.First();
-
-        var command = new UpdateSaleCommand()
-        {
-            Id = sale.Id,
-            SaleNumber = "SALE-UPDATED-001",
-            CustomerId = sale.CustomerId,
-            CustomerName = "Updated Customer",
-            Items =      new List<UpdateSaleItemCommand>()
-            {
-                new()
-                {
-                    Operation = UpdateSaleItemOperation.Update,
-                    Id = existingItem.Id,
-                    ProductId = existingItem.ProductId,
-                    ProductName = "Updated Product",
-                    Quantity = 10,
-                    UnitPrice = 100
-                },
-                new()
-                {
-                    Operation = UpdateSaleItemOperation.Create,
-                    Id = null,
-                    ProductId = Guid.NewGuid(),
-                    ProductName = "New Product",
-                    Quantity = 5,
-                    UnitPrice = 50
-                },
-                new()
-                {
-                    Operation = UpdateSaleItemOperation.Cancel,
-                    Id = existingItem.Id,
-                    ProductId = existingItem.ProductId,
-                    ProductName = existingItem.ProductName,
-                    Quantity = existingItem.Quantity,
-                    UnitPrice = existingItem.UnitPrice.Value
-                }
-            },
-        };
+        var command = UpdateSaleTestData.GenerateValidCommandFromExistingSale(sale);
 
         // Act
         var result = await Mediator.Send(command);
