@@ -6,11 +6,11 @@ namespace Ambev.DeveloperEvaluation.Messaging.Outbox;
 
 public class OutboxWriter : IIntegrationEventsDispatcher
 {
-    private readonly DbSet<OutboxEntity> _outbox;
+    private readonly IOutboxRepository _outboxRepository;
 
-    public OutboxWriter(DbContext context)
+    public OutboxWriter(IOutboxRepository outboxRepository)
     {
-        _outbox = context.Set<OutboxEntity>();
+        _outboxRepository = outboxRepository;
     }
     
     public async Task DispatchAsync(IIntegrationEvent message, CancellationToken cancellationToken)
@@ -23,6 +23,6 @@ public class OutboxWriter : IIntegrationEventsDispatcher
             DateTime.UtcNow
             );
         
-        await _outbox.AddAsync(outbox, cancellationToken);
+        await _outboxRepository.CreateAsync(outbox, cancellationToken);
     }
 }

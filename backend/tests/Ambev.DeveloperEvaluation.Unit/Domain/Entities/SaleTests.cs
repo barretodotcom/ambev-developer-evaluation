@@ -7,8 +7,15 @@ using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities;
 
+/// <summary>
+/// Contains unit tests for the Sale entity class.
+/// Tests cover status changes and validation scenarios.
+/// </summary>
 public class SaleTests
 {
+    /// <summary>
+    /// Ensures that adding an existing product to a sale increases its quantity.
+    /// </summary>
     [Fact]
     public void AddItem_ShouldIncreaseQuantity_WhenProductAlreadyExists()
     {
@@ -16,10 +23,10 @@ public class SaleTests
         var sale = SaleTestData.GenerateSaleWithoutItems();
 
         var productId = Guid.NewGuid();
-            
+
         // Act
         sale.AddItem(
-            productId:productId ,
+            productId: productId,
             productName: "Product A",
             quantity: 2,
             unitPrice: Money.Create(10)
@@ -36,7 +43,9 @@ public class SaleTests
         sale.Items.First().Quantity.Should().Be(4);
     }
 
-    
+    /// <summary>
+    /// Ensures that adding anOTHER product to a sale increases sale's total amount.
+    /// </summary>
     [Fact]
     public void AddItem_ShouldIncreaseTotalAmount()
     {
@@ -60,7 +69,10 @@ public class SaleTests
         // Assert
         sale.TotalAmount.Value.Should().Be(40);
     }
-    
+
+    /// <summary>
+    /// Ensures that adding another product to a sale increases sale's total amount.
+    /// </summary>
     [Fact]
     public void Constructor_ShouldThrowException_WhenSaleDateIsInFuture()
     {
@@ -78,10 +90,13 @@ public class SaleTests
 
         // Assert
         act.Should()
-           .Throw<DomainException>()
-           .WithMessage("Sale date cannot be in the future");
+            .Throw<DomainException>()
+            .WithMessage("Sale date cannot be in the future");
     }
 
+    /// <summary>
+    /// Ensures that creating a sale sets the initial status and raises the SaleCreatedDomainEvent.
+    /// </summary>
     [Fact]
     public void Constructor_ShouldCreateSaleAndRaiseDomainEvent()
     {
@@ -94,6 +109,9 @@ public class SaleTests
             .ContainSingle(e => e.GetType().Name == "SaleCreatedDomainEvent");
     }
 
+    /// <summary>
+    /// Ensures that adding a new product to a sale adds a new item and updates the total amount.
+    /// </summary>
     [Fact]
     public void AddItem_ShouldAddItem_WhenProductIsNew()
     {
@@ -112,6 +130,9 @@ public class SaleTests
         sale.TotalAmount.Value.Should().Be(20);
     }
 
+    /// <summary>
+    /// Should increase the item quantity when the same product is added to the sale.
+    /// </summary>
     [Fact]
     public void AddItem_ShouldIncreaseQuantity_WhenSameProductIsAdded()
     {
@@ -129,6 +150,9 @@ public class SaleTests
         item.Quantity.Should().Be(8);
     }
 
+    /// <summary>
+    /// Should throw a domain exception when the item quantity exceeds the allowed limit.
+    /// </summary>
     [Fact]
     public void AddItem_ShouldThrowException_WhenQuantityExceedsLimit()
     {
@@ -145,10 +169,13 @@ public class SaleTests
 
         // Assert
         act.Should()
-           .Throw<DomainException>()
-           .WithMessage("Cannot sell more than 20 identical items.");
+            .Throw<DomainException>()
+            .WithMessage("Cannot sell more than 20 identical items.");
     }
 
+    /// <summary>
+    /// Should apply the correct discount percentage based on the item quantity.
+    /// </summary>
     [Theory]
     [InlineData(4, 0.10)]
     [InlineData(10, 0.20)]
@@ -168,6 +195,9 @@ public class SaleTests
         sale.Items.Single().DiscountPercentage.Value.Should().Be(expectedDiscount);
     }
 
+    /// <summary>
+    /// Should update an existing sale item when valid data is provided.
+    /// </summary>
     [Fact]
     public void UpdateItem_ShouldUpdateItem_WhenValid()
     {
@@ -188,6 +218,9 @@ public class SaleTests
         item.ProductName.Should().Be("Updated Product");
     }
 
+    /// <summary>
+    /// Should throw a domain exception when attempting to update a non-existing item.
+    /// </summary>
     [Fact]
     public void UpdateItem_ShouldThrowException_WhenItemDoesNotExist()
     {
@@ -204,10 +237,13 @@ public class SaleTests
 
         // Assert
         act.Should()
-           .Throw<DomainException>()
-           .WithMessage("*not found*");
+            .Throw<DomainException>()
+            .WithMessage("*not found*");
     }
 
+    /// <summary>
+    /// Should cancel the duplicated item when updating an item to an existing product.
+    /// </summary>
     [Fact]
     public void UpdateItem_ShouldCancelDuplicatedProduct()
     {
@@ -232,7 +268,10 @@ public class SaleTests
         // Assert
         secondItem.Status.Should().Be(SaleItemStatus.Cancelled);
     }
-
+    
+    /// <summary>
+    /// Should cancel an existing item in the sale.
+    /// </summary>
     [Fact]
     public void CancelItem_ShouldCancelItem_WhenExists()
     {
@@ -247,6 +286,9 @@ public class SaleTests
         item.Status.Should().Be(SaleItemStatus.Cancelled);
     }
 
+    /// <summary>
+    /// Should raise a SaleUpdatedDomainEvent when the sale is updated.
+    /// </summary>
     [Fact]
     public void Update_ShouldRaiseSaleUpdatedDomainEvent()
     {
@@ -260,7 +302,10 @@ public class SaleTests
         sale.DomainEvents.Should()
             .ContainSingle(e => e.GetType().Name == "SaleUpdatedDomainEvent");
     }
-
+    
+    /// <summary>
+    /// Should cancel the sale and raise a SaleCancelledDomainEvent.
+    /// </summary>
     [Fact]
     public void Cancel_ShouldCancelSaleAndRaiseEvent()
     {
@@ -276,6 +321,9 @@ public class SaleTests
             .ContainSingle(e => e.GetType().Name == "SaleCancelledDomainEvent");
     }
 
+    /// <summary>
+    /// Should throw a domain exception when attempting to cancel an already cancelled sale.
+    /// </summary>
     [Fact]
     public void Cancel_ShouldThrowException_WhenAlreadyCancelled()
     {
@@ -288,7 +336,8 @@ public class SaleTests
 
         // Assert
         act.Should()
-           .Throw<DomainException>()
-           .WithMessage("The sale is already cancelled.");
+            .Throw<DomainException>()
+            .WithMessage("The sale is already cancelled.");
     }
+
 }

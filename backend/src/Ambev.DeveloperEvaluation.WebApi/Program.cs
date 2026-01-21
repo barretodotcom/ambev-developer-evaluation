@@ -35,15 +35,22 @@ public class Program
             builder.Services.AddSwaggerGen();
             builder.Services.AddHostedService<OutboxProcessor>();
 
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException("DefaultConnection is not configured");
+            }
+            
             builder.Services.AddDbContext<DefaultContext>((sp, options) =>
                 {
-                    var mediatr = sp.GetRequiredService<IMediator>();
+                    var mediator = sp.GetRequiredService<IMediator>();
 
                     options.UseNpgsql(
-                            builder.Configuration.GetConnectionString("DefaultConnection"),
+                            connectionString,
                             b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
                         )
-                        .AddInterceptors(new DomainEventsInterceptor(mediatr));
+                        .AddInterceptors(new DomainEventsInterceptor(mediator));
                 }
             );
 
@@ -71,9 +78,6 @@ public class Program
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-
-                using var scope = app.Services.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<DefaultContext>();
             }
 
             app.UseHttpsRedirection();

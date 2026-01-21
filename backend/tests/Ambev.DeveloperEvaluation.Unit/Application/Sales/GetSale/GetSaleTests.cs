@@ -8,11 +8,18 @@ using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Unit.Application.Sales.GetSale;
 
+/// <summary>
+/// Contains unit tests for the <see cref="GetSaleHandler"/> class.
+/// </summary>
 public sealed class GetSaleHandlerTests
 {
     private readonly ISaleReadRepository _saleReadRepository;
     private readonly GetSaleHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetSaleHandlerTests"/> class.
+    /// Configures the read repository mock and AutoMapper profile.
+    /// </summary>
     public GetSaleHandlerTests()
     {
         _saleReadRepository = Substitute.For<ISaleReadRepository>();
@@ -26,6 +33,10 @@ public sealed class GetSaleHandlerTests
             mapper);
     }
 
+    /// <summary>
+    /// Tests that when an existing sale is queried,
+    /// the handler returns the mapped sale result.
+    /// </summary>
     [Fact(DisplayName = "Given existing sale When handling Then returns mapped sale")]
     public async Task Handle_ShouldReturnSale_WhenSaleExists()
     {

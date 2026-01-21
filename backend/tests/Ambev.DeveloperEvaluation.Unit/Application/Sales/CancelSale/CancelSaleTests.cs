@@ -25,7 +25,12 @@ public class CancelSaleHandlerTests
         _saleRepository = Substitute.For<ISaleRepository>();
         _handler = new CancelSaleHandler(_unitOfWork, _saleRepository);
     }
-
+    
+    /// <summary>
+    /// Tests that when a valid active sale is cancelled,
+    /// the sale and all its items are marked as cancelled
+    /// and the changes are persisted.
+    /// </summary>
     [Fact(DisplayName = "Given valid sale When cancelling Then sale and items are cancelled")]
     public async Task Handle_ValidSale_CancelsSaleAndItems()
     {
@@ -53,7 +58,11 @@ public class CancelSaleHandlerTests
         _saleRepository.Received(1).Update(sale);
         await _unitOfWork.Received(1).CommitAsync(Arg.Any<CancellationToken>());
     }
-
+    
+    /// <summary>
+    /// Tests that when attempting to cancel a sale that does not exist,
+    /// a domain exception is thrown.
+    /// </summary>
     [Fact(DisplayName = "Given non existing sale When cancelling Then throws exception")]
     public async Task Handle_SaleNotFound_ThrowsException()
     {
@@ -75,6 +84,10 @@ public class CancelSaleHandlerTests
             .WithMessage("The sale does not exist.");
     }
 
+    /// <summary>
+    /// Tests that when attempting to cancel a sale that is already cancelled,
+    /// a domain exception is thrown.
+    /// </summary>
     [Fact(DisplayName = "Given already cancelled sale When cancelling Then throws domain exception")]
     public async Task Handle_AlreadyCancelledSale_ThrowsException()
     {

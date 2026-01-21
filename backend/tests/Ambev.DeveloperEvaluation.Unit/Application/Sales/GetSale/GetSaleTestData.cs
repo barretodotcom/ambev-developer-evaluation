@@ -3,8 +3,26 @@ using Bogus;
 
 namespace Ambev.DeveloperEvaluation.Unit.Application.Sales.GetSale;
 
+/// <summary>
+/// Provides methods for generating test data for the Get Sale read query.
+/// Centralizes the creation of read models with configurable identifiers
+/// and item quantities to support application-layer unit tests.
+/// </summary>
 public static class GetSaleTestData
 {
+    /// <summary>
+    /// Generates a <see cref="GetSaleReadModel"/> with a configurable sale identifier
+    /// and number of items.
+    /// </summary>
+    /// <param name="saleId">
+    /// Optional sale identifier. If not provided, a new <see cref="Guid"/> is generated.
+    /// </param>
+    /// <param name="itemsCount">
+    /// The number of sale items to generate.
+    /// </param>
+    /// <returns>
+    /// A populated <see cref="GetSaleReadModel"/> instance.
+    /// </returns>
     public static GetSaleReadModel CreateReadModel(Guid? saleId = null, int itemsCount = 2)
     {
         var itemFaker = new Faker<GetSaleItemReadModel>()

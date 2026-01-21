@@ -1,11 +1,25 @@
 using Xunit;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 
 namespace Ambev.DeveloperEvaluation.Integration.Sales.CreateSale;
 
+/// <summary>
+/// Contains integration tests for the <see cref="CreateSaleCommand"/> handling flow.
+/// These tests validate the full application pipeline, including
+/// command handling, domain logic, persistence, interceptors,
+/// and MediatR execution.
+/// </summary>
 public class CreateSaleTests : IntegrationTestBase
 {
+    /// <summary>
+    /// Given a valid <see cref="CreateSaleCommand"/>
+    /// When the command is handled by the application pipeline
+    /// Then a new <see cref="Sale"/> is created and fully persisted in the database
+    /// with all related <see cref="SaleItem"/>s correctly mapped.
+    /// </summary>
     [Fact]
     public async Task Should_Create_Sale_And_Persist_In_Database()
     {

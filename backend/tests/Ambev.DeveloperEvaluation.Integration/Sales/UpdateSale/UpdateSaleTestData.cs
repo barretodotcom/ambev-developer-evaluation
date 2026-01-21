@@ -6,10 +6,24 @@ using Bogus;
 
 namespace Ambev.DeveloperEvaluation.Integration.Sales.UpdateSale;
 
+/// <summary>
+/// Provides factory methods to generate test data for
+/// integration tests related to updating sales.
+/// </summary>
+/// <remarks>
+/// This class centralizes the creation of valid <see cref="Sale"/> entities and 
+/// corresponding <see cref="UpdateSaleCommand"/>s to ensure consistency, readability, 
+/// and reusability across update-related tests.
+/// </remarks>
 public class UpdateSaleTestData
 {
     private static readonly Faker Faker = new("en");
 
+    /// <summary>
+    /// Given no initial state
+    /// When creating a new sale with items for testing purposes
+    /// Then a fully populated <see cref="Sale"/> with multiple <see cref="SaleItem"/>s is returned.
+    /// </summary>
     public static Sale CreateValidSaleWithItems()
     {
         var sale = new Sale(
@@ -38,6 +52,12 @@ public class UpdateSaleTestData
         return sale;
     }
 
+    /// <summary>
+    /// Given an existing <see cref="Sale"/> with items
+    /// When generating an <see cref="UpdateSaleCommand"/> from it
+    /// Then the command contains operations to update, create, and cancel <see cref="SaleItem"/>s,
+    /// reflecting realistic changes for integration testing of the update pipeline.
+    /// </summary>
     public static UpdateSaleCommand GenerateValidCommandFromExistingSale(Sale sale)
     {
         var existingItem = sale.Items.First();

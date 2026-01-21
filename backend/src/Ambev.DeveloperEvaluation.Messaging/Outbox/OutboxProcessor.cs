@@ -63,7 +63,7 @@ public sealed class OutboxProcessor : BackgroundService
                 await publisher.PublishAsync(message, cancellationToken);
                 message.MarkAsProcessed();
             }
-            
+
         }, cancellationToken);
         
     }

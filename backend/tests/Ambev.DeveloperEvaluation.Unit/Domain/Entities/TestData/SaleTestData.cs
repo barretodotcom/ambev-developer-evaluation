@@ -5,15 +5,23 @@ using Bogus;
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 
 /// <summary>
-/// Provides methods for generating test data for Sale aggregate using Bogus.
-/// Centralizes valid and invalid data generation for consistent unit tests.
+/// Provides methods for generating test data for the Sale aggregate using the Bogus library.
+/// This class centralizes all Sale test data generation to ensure consistency
+/// across unit tests, including both valid and invalid scenarios.
 /// </summary>
 public static class SaleTestData
 {
     private static readonly Faker Faker = new();
 
     /// <summary>
-    /// Generates a valid Sale aggregate with items.
+    /// Generates a valid Sale aggregate with at least one item.
+    /// The generated sale will have:
+    /// - A valid identifier and customer information
+    /// - An active status
+    /// - At least one SaleItem with:
+    ///   - Valid product identifier and name
+    ///   - Quantity within the allowed range
+    ///   - Unit price greater than zero
     /// </summary>
     public static Sale GenerateValidSale()
     {
@@ -30,50 +38,13 @@ public static class SaleTestData
     }
 
     /// <summary>
-    /// Generates a Sale without items (invalid scenario).
+    /// Generates a Sale aggregate without items.
+    /// This scenario is useful for testing behaviors that depend on
+    /// an empty sale, such as initial creation or validation rules
+    /// that require at least one item.
     /// </summary>
     public static Sale GenerateSaleWithoutItems()
     {
         return new Sale(Faker.Random.String(), Faker.Random.Guid(), Faker.Random.String(), DateTime.UtcNow, Faker.Random.Guid(),Faker.Random.String());
-    }
-
-    /// <summary>
-    /// Generates an invalid quantity (zero or negative).
-    /// </summary>
-    public static int GenerateInvalidQuantity()
-    {
-        return Faker.Random.Int(-10, 0);
-    }
-
-    /// <summary>
-    /// Generates a valid quantity.
-    /// </summary>
-    public static int GenerateValidQuantity()
-    {
-        return Faker.Random.Int(1, 20);
-    }
-
-    /// <summary>
-    /// Generates an invalid unit price (zero or negative).
-    /// </summary>
-    public static Money GenerateInvalidUnitPrice()
-    {
-        return Money.Create(Faker.Random.Decimal(-100, 0));
-    }
-
-    /// <summary>
-    /// Generates a valid unit price.
-    /// </summary>
-    public static Money GenerateValidUnitPrice()
-    {
-        return Money.Create(Faker.Random.Decimal(1, 500));
-    }
-
-    /// <summary>
-    /// Generates a valid product name.
-    /// </summary>
-    public static string GenerateValidProductName()
-    {
-        return Faker.Commerce.ProductName();
     }
 }

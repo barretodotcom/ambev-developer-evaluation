@@ -23,7 +23,7 @@ public class DefaultContext : DbContext
     }
 }
 
-public class YourDbContextFactory : IDesignTimeDbContextFactory<DefaultContext>
+public class DesignTimeContextFactory : IDesignTimeDbContextFactory<DefaultContext>
 {
     public DefaultContext CreateDbContext(string[] args)
     {

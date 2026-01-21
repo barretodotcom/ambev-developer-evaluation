@@ -1,4 +1,4 @@
-using Ambev.DeveloperEvaluation.Application.Enums;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +7,25 @@ using SaleItemStatus = Ambev.DeveloperEvaluation.Domain.Enums.SaleItemStatus;
 
 namespace Ambev.DeveloperEvaluation.Integration.Sales.UpdateSale;
 
+/// <summary>
+/// Provides integration tests for the update sale functionality.
+/// </summary>
+/// <remarks>
+/// This class centralizes tests that verify the correct behavior of updating 
+/// <see cref="Sale"/> entities and their associated <see cref="SaleItem"/>s
+/// through the application pipeline using <see cref="UpdateSaleCommand"/>.
+/// It ensures that updates, creations, and cancellations of items are correctly 
+/// applied and fully persisted in the database.
+/// </remarks>
 public class UpdateSaleIntegrationTests : IntegrationTestBase
 {
+    /// <summary>
+    /// Given an existing <see cref="Sale"/> with multiple <see cref="SaleItem"/>s
+    /// When an <see cref="UpdateSaleCommand"/> is sent via the application pipeline
+    /// Then the sale is updated with the new SaleNumber and CustomerName,
+    /// all item operations (update, create, cancel) are correctly applied,
+    /// and the changes are fully persisted in the database.
+    /// </summary>
     [Fact]
     public async Task Should_Update_Sale_And_Items_Correctly()
     {

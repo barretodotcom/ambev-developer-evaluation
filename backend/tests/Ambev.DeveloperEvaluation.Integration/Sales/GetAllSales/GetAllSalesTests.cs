@@ -1,13 +1,27 @@
 using Ambev.DeveloperEvaluation.Application.Read.Common;
 using Ambev.DeveloperEvaluation.Application.Read.Enums;
 using Ambev.DeveloperEvaluation.ORM.ReadModel;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using FluentAssertions;
 using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Integration.Sales.GetAllSales;
 
+/// <summary>
+/// Contains integration tests for retrieving sales data
+/// using pagination, ordering and filtering scenarios.
+/// </summary>
+/// <remarks>
+/// These tests validate the behavior of <see cref="SaleReadRepository"/>
+/// against a real database context, ensuring correct paging,
+/// ordering and empty dataset handling.
+/// </remarks>
 public class GetAllSalesTests : IntegrationTestBase
 {
+    /// <summary>
+    /// When requesting the first page with ordering applied
+    /// Then returns the first set of sales ordered by sale date.
+    /// </summary>
     [Fact]
     public async Task GetAllSalesAsync_Page1_ShouldReturnFirstPage()
     {
@@ -38,6 +52,11 @@ public class GetAllSalesTests : IntegrationTestBase
         data.Should().BeInAscendingOrder(x => x.SaleDate);
     }
 
+    /// <summary>
+    /// Given multiple sales
+    /// When requesting the second page
+    /// Then skips the first page results and returns distinct items.
+    /// </summary>
     [Fact]
     public async Task GetAllSalesAsync_Page2_ShouldSkipFirstPage()
     {
@@ -59,6 +78,11 @@ public class GetAllSalesTests : IntegrationTestBase
             .NotIntersectWith(page1.Select(x => x.Id));
     }
 
+    /// <summary>
+    /// Given multiple sales
+    /// When requesting the last page
+    /// Then returns only the remaining items.
+    /// </summary>
     [Fact]
     public async Task GetAllSalesAsync_LastPage_ShouldReturnRemainingItems()
     {
@@ -81,6 +105,11 @@ public class GetAllSalesTests : IntegrationTestBase
         data.Should().HaveCount(1);
     }
 
+    /// <summary>
+    /// Given no sales stored
+    /// When requesting paginated data
+    /// Then returns an empty result set with zero total items.
+    /// </summary>
     [Fact]
     public async Task GetAllSalesAsync_WhenNoSales_ShouldReturnEmptyList()
     {

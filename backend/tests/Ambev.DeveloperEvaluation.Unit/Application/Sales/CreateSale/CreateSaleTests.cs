@@ -32,7 +32,11 @@ public class CreateSaleHandlerTests
             _mapper
         );
     }
-
+    
+    /// <summary>
+    /// Tests that when valid sale data is provided,
+    /// the handler creates the sale successfully and returns a valid result.
+    /// </summary>
     [Fact(DisplayName = "Given valid sale data When creating sale Then returns success response")]
     public async Task Handle_ValidRequest_ReturnsSuccessResponse()
     {
@@ -73,6 +77,10 @@ public class CreateSaleHandlerTests
             .CommitAsync(Arg.Any<CancellationToken>());
     }
 
+    /// <summary>
+    /// Tests that when a valid sale creation request is handled,
+    /// the unit of work is committed exactly once.
+    /// </summary>
     [Fact(DisplayName = "Given valid sale When handling Then commits unit of work")]
     public async Task Handle_ValidRequest_CommitsUnitOfWork()
     {
@@ -91,6 +99,10 @@ public class CreateSaleHandlerTests
             .CommitAsync(Arg.Any<CancellationToken>());
     }
 
+    /// <summary>
+    /// Tests that when a valid sale creation request is handled,
+    /// the created sale is mapped to the result object.
+    /// </summary>
     [Fact(DisplayName = "Given valid sale When handling Then maps sale to result")]
     public async Task Handle_ValidRequest_MapsSaleToResult()
     {
@@ -109,6 +121,10 @@ public class CreateSaleHandlerTests
             .Map<CreateSaleResult>(Arg.Any<Sale>());
     }
 
+    /// <summary>
+    /// Tests that when a sale creation request contains items,
+    /// the handler creates the sale including all provided items.
+    /// </summary>
     [Fact(DisplayName = "Given sale with items When handling Then creates sale with items")]
     public async Task Handle_ValidRequest_CreatesSaleWithItems()
     {

@@ -30,13 +30,8 @@ public class OutboxRepository : IOutboxRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task MarkAsProcessedAsync(
-        IEnumerable<OutboxEntity> messages,
-        CancellationToken cancellationToken)
+    public async Task CreateAsync(OutboxEntity entity, CancellationToken cancellationToken)
     {
-        foreach (var message in messages)
-            message.MarkAsProcessed();
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.Set<OutboxEntity>().AddAsync(entity, cancellationToken);
     }
 }

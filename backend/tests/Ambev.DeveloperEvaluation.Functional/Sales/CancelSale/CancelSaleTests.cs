@@ -1,32 +1,44 @@
-using System.Net.Http.Json;
-using Ambev.DeveloperEvaluation.Application.Read.Sales.ReadModels;
-using Ambev.DeveloperEvaluation.Domain.Enums;
-using Ambev.DeveloperEvaluation.ORM;
-using Ambev.DeveloperEvaluation.WebApi.Common;
-using Ambev.DeveloperEvaluation.WebApi.Common.Pagination;
-using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
-using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetAllSales;
 using Xunit;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ApiProgram = Ambev.DeveloperEvaluation.WebApi.Program;
+using System.Net.Http.Json;
+using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.WebApi.Common;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 
 namespace Ambev.DeveloperEvaluation.Functional.Sales.CancelSale;
 
+/// <summary>
+/// Provides functional integration tests for cancelling <see cref="Sale"/> entities via the API.
+/// </summary>
+/// <remarks>
+/// This class uses a <see cref="CustomWebApplicationFactory"/> to create an in-memory
+/// test host and client for functional testing. It ensures that sales cancelled via
+/// the API endpoint are correctly updated in the database, including the status of
+/// all associated <see cref="Domain.Entities.SaleItem"/>s.
+/// </remarks>
 public class CancelSaleTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client;
     private readonly CustomWebApplicationFactory _factory;
-
+    private readonly string _databaseName = $"TestDb_{Guid.NewGuid()}";
+    
     public CancelSaleTests(CustomWebApplicationFactory factory)
     {
-        _client = factory.CreateClient();
+        factory.UseDatabase(_databaseName);
         _factory = factory;
+        _client = factory.CreateClient();
     }
 
-
+    /// <summary>
+    /// Given an existing <see cref="Sale"/> with multiple <see cref="Domain.Entities.SaleItem"/>s
+    /// When a DELETE request is made to the API endpoint for that sale
+    /// Then the sale and all its items are marked as <see cref="SaleStatus.Cancelled"/> and <see cref="SaleItemStatus.Cancelled"/>
+    /// in the database, confirming the cancellation is fully applied.
+    /// </summary>
     [Fact]
     public async Task CreateSaleSales_ShouldReturnCreatedSaleId()
     {
