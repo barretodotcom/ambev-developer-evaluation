@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Abstractions.Commands;
 using MediatR;
 using FluentValidation;
 
@@ -17,16 +18,12 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 /// <see cref="AbstractValidator{T}"/> to ensure that the fields are correctly 
 /// populated and follow the required rules.
 /// </remarks>
-public record CreateSaleCommand : IRequest<CreateSaleResult>
+public record CreateSaleCommand : ICommand<CreateSaleResult>
 {
     /// <summary>
     /// Gets or sets the customer id.
     /// </summary>
     public Guid CustomerId { get; init; }
-    /// <summary>
-    /// Gets or sets the customer name.
-    /// </summary>
-    public string CustomerName { get; init; } = string.Empty;
     /// <summary>
     /// Gets or sets the sale number.
     /// Must not be null or empty.

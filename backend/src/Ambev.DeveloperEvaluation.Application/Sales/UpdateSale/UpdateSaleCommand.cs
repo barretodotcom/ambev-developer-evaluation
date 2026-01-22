@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Abstractions.Commands;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
@@ -7,7 +8,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 /// This command can include updates to the sale details as well as the sale items.
 /// All operations on sale items should be handled through <see cref="UpdateSaleItemCommand"/>.
 /// </summary>
-public record UpdateSaleCommand : IRequest<UpdateSaleResult>
+public record UpdateSaleCommand : ICommand<UpdateSaleResult>
 {
     /// <summary>
     /// Gets the unique sale identifier.

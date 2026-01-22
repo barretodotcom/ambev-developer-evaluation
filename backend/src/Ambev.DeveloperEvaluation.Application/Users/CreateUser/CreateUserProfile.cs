@@ -16,8 +16,8 @@ public class CreateUserProfile : Profile
         CreateMap<CreateUserCommand, User>()
             .ForMember(d => d.Id, opt => opt.Ignore())
             .ForMember(d => d.CreatedAt, opt => opt.Ignore())
-            .ForMember(d => d.UpdatedAt, opt => opt.Ignore());
-        ;
+            .ForMember(d => d.UpdatedAt, opt => opt.Ignore())
+            .ForMember(d => d.DomainEvents, opt => opt.Ignore());
         CreateMap<User, CreateUserResult>();
     }
 }

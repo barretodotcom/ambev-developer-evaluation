@@ -182,8 +182,15 @@ public sealed class Sale : AggregateRoot
         SaleNumber = saleNumber;
         CustomerId = customerId;
         CustomerName = customerName;
+        UpdatedAt = DateTime.UtcNow;
         
         AddDomainEvent(new SaleUpdatedDomainEvent(Id, CustomerId));
+    }
+
+    public void UpdateCustomerName(string customerName)
+    {
+        CustomerName = customerName;
+        UpdatedAt = DateTime.UtcNow;
     }
     
     private static Percentage CalculateDiscount(int quantity)
@@ -203,6 +210,7 @@ public sealed class Sale : AggregateRoot
             throw new DomainException("The sale is already cancelled.");
 
         Status = SaleStatus.Cancelled;
+        UpdatedAt = DateTime.UtcNow;
 
         AddDomainEvent(new SaleCancelledDomainEvent(Id));
     }

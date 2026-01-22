@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Abstractions.Commands;
 using Ambev.DeveloperEvaluation.Application.Abstractions.Transactions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Enums;
@@ -8,7 +9,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 /// <summary>
 /// Handler for processing CancelSaleCommand requests
 /// </summary>
-public sealed class CancelSaleHandler : IRequestHandler<CancelSaleCommand>
+public sealed class CancelSaleHandler : ICommandHandler<CancelSaleCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISaleRepository _saleRepository;

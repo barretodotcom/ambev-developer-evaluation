@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Abstractions.Commands;
 using AutoMapper;
 using MediatR;
 using FluentValidation;
@@ -10,7 +11,7 @@ namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 /// <summary>
 /// Handler for processing CreateUserCommand requests
 /// </summary>
-public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserResult>
+public class CreateUserHandler : ICommandHandler<CreateUserCommand, CreateUserResult>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;

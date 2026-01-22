@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
+﻿using Ambev.DeveloperEvaluation.Application.Abstractions.Commands;
+using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using MediatR;
 
@@ -18,7 +19,7 @@ namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 /// <see cref="AbstractValidator{T}"/> to ensure that the fields are correctly 
 /// populated and follow the required rules.
 /// </remarks>
-public class CreateUserCommand : IRequest<CreateUserResult>
+public class CreateUserCommand : ICommand<CreateUserResult>
 {
     /// <summary>
     /// Gets or sets the username of the user to be created.

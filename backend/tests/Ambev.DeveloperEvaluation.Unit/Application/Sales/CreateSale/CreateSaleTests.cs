@@ -1,7 +1,9 @@
 using Ambev.DeveloperEvaluation.Application.Abstractions.Transactions;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.Domain.Dtos.Sales;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Services.Sales;
 using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using AutoMapper;
 using FluentAssertions;
@@ -16,6 +18,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Application.Sales.CreateSale;
 public class CreateSaleHandlerTests
 {
     private readonly ISaleRepository _saleRepository;
+    private readonly ICustomerService _customerService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly CreateSaleHandler _handler;
@@ -23,11 +26,13 @@ public class CreateSaleHandlerTests
     public CreateSaleHandlerTests()
     {
         _saleRepository = Substitute.For<ISaleRepository>();
+        _customerService = Substitute.For<ICustomerService>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _mapper = Substitute.For<IMapper>();
 
         _handler = new CreateSaleHandler(
             _saleRepository,
+            _customerService,
             _unitOfWork,
             _mapper
         );
@@ -43,10 +48,12 @@ public class CreateSaleHandlerTests
         // Given
         var command = CreateSaleTestData.GenerateValidCommand();
 
+        var customerName = CreateSaleTestData.GenerateCustomerName();
+        
         var sale = new Sale(
             command.SaleNumber,
             command.CustomerId,
-            command.CustomerName,
+            customerName,
             command.SaleDate,
             command.BranchId,
             command.BranchName
@@ -58,9 +65,18 @@ public class CreateSaleHandlerTests
         };
 
         _saleRepository
-            .CreateAsync(Arg.Any<Sale>(), Arg.Any<CancellationToken>())
+            .CreateAsync(sale, CancellationToken.None)
             .Returns(sale);
 
+        var customer = new CustomerDto(command.CustomerId, customerName);
+
+        _customerService.GetCustomerById(command.CustomerId, CancellationToken.None)
+            .Returns(customer);
+
+        _saleRepository
+            .CreateAsync(Arg.Any<Sale>(), Arg.Any<CancellationToken>())
+            .Returns(sale);
+        
         _mapper.Map<CreateSaleResult>(sale).Returns(result);
 
         // When
@@ -70,9 +86,9 @@ public class CreateSaleHandlerTests
         response.Should().NotBeNull();
         response.Id.Should().Be(sale.Id);
 
-        await _saleRepository.Received(1)
+        _saleRepository.Received(1)
             .CreateAsync(Arg.Any<Sale>(), Arg.Any<CancellationToken>());
-
+        
         await _unitOfWork.Received(1)
             .CommitAsync(Arg.Any<CancellationToken>());
     }
@@ -91,6 +107,11 @@ public class CreateSaleHandlerTests
             .CreateAsync(Arg.Any<Sale>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<Sale>());
 
+        var customerName = CreateSaleTestData.GenerateCustomerName();
+        var customer = new CustomerDto(command.CustomerId, customerName);
+
+        _customerService.GetCustomerById(command.CustomerId, CancellationToken.None)
+            .Returns(customer);
         // When
         await _handler.Handle(command, CancellationToken.None);
 
@@ -113,6 +134,12 @@ public class CreateSaleHandlerTests
             .CreateAsync(Arg.Any<Sale>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<Sale>());
 
+        var customerName = CreateSaleTestData.GenerateCustomerName();
+        var customer = new CustomerDto(command.CustomerId, customerName);
+
+        _customerService.GetCustomerById(command.CustomerId, CancellationToken.None)
+            .Returns(customer);
+        
         // When
         await _handler.Handle(command, CancellationToken.None);
 
@@ -137,6 +164,12 @@ public class CreateSaleHandlerTests
             .CreateAsync(Arg.Do<Sale>(s => capturedSale = s), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<Sale>());
 
+        var customerName = CreateSaleTestData.GenerateCustomerName();
+        var customer = new CustomerDto(command.CustomerId, customerName);
+
+        _customerService.GetCustomerById(command.CustomerId, CancellationToken.None)
+            .Returns(customer);
+        
         // When
         await _handler.Handle(command, CancellationToken.None);
 

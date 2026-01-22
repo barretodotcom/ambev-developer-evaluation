@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Bogus;
 
 namespace Ambev.DeveloperEvaluation.Integration.Sales.CreateSale;
@@ -43,15 +44,22 @@ public class CreateSaleTestData
     private static readonly Faker<CreateSaleCommand> SaleCommandFaker =
         new Faker<CreateSaleCommand>()
             .RuleFor(s => s.SaleNumber, f => f.Random.Replace("SALE-#####"))
-            .RuleFor(s => s.CustomerId, f => f.Random.Guid())
-            .RuleFor(s => s.CustomerName, f => f.Person.FullName)
             .RuleFor(s => s.SaleDate, f => f.Date.Recent())
             .RuleFor(s => s.BranchId, f => f.Random.Guid())
             .RuleFor(s => s.BranchName, f => f.Company.CompanyName())
             .RuleFor(s => s.Items, f => SaleItemFaker.Generate(3));
 
-    public static CreateSaleCommand GenerateValidCommand()
+    public static CreateSaleCommand GenerateValidCommand(Guid customerId)
     {
-        return SaleCommandFaker.Generate();
+        var command =  SaleCommandFaker.RuleFor(l => l.CustomerId, _ => customerId).Generate();
+        
+        return command;
+    }
+
+    public static User GenerateValidUser()
+    {
+        return new Faker<User>()
+            .RuleFor(l => l.Id, f => f.Random.Guid())
+            .RuleFor(l => l.Username, f => f.Person.FullName);
     }
 }

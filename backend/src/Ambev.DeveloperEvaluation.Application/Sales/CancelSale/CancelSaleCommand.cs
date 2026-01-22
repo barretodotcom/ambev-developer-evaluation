@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Abstractions.Commands;
 using MediatR;
 using FluentValidation;
 
@@ -16,7 +17,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 /// <see cref="AbstractValidator{T}"/> to ensure that the fields are correctly 
 /// populated and follow the required rules.
 /// </remarks>
-public record CancelSaleCommand : IRequest
+public record CancelSaleCommand : ICommand
 {
     /// <summary>
     /// Gets or sets the identifier of the sale to be cancelled.

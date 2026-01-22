@@ -10,6 +10,8 @@ namespace Ambev.DeveloperEvaluation.Unit.Application.Sales.CreateSale;
 /// </summary>
 public static class CreateSaleTestData
 {
+    private static Faker Faker => new Faker("en");
+    
     /// <summary>
     /// Faker configuration for generating valid sale item commands.
     /// Generated items contain:
@@ -36,7 +38,6 @@ public static class CreateSaleTestData
         new Faker<CreateSaleCommand>()
             .RuleFor(s => s.SaleNumber, f => f.Random.Replace("SALE-#####"))
             .RuleFor(s => s.CustomerId, f => f.Random.Guid())
-            .RuleFor(s => s.CustomerName, f => f.Person.FullName)
             .RuleFor(s => s.SaleDate, f => f.Date.Recent())
             .RuleFor(s => s.BranchId, f => f.Random.Guid())
             .RuleFor(s => s.BranchName, f => f.Company.CompanyName())
@@ -48,5 +49,13 @@ public static class CreateSaleTestData
     public static CreateSaleCommand GenerateValidCommand()
     {
         return SaleCommandFaker.Generate();
+    }
+
+    /// <summary>
+    /// Generates a valid customerName.
+    /// </summary>
+    public static string GenerateCustomerName()
+    {
+        return Faker.Company.CompanyName();
     }
 }

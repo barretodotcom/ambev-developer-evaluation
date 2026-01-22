@@ -6,10 +6,12 @@ using Ambev.DeveloperEvaluation.Application.Abstractions.Events;
 using Ambev.DeveloperEvaluation.Application.Abstractions.Transactions;
 using Ambev.DeveloperEvaluation.Application.Read;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Services.Sales;
 using Ambev.DeveloperEvaluation.Messaging.Outbox;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.Interceptors;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
+using Ambev.DeveloperEvaluation.ORM.Services.Sales;
 using Ambev.DeveloperEvaluation.ORM.UnitOfWork;
 using MediatR;
 
@@ -82,6 +84,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         services.AddScoped<ISaleRepository, SaleRepository>();
         services.AddScoped<IOutboxRepository, OutboxRepository>();
         services.AddScoped<IIntegrationEventsDispatcher, OutboxWriter>();
+        services.AddScoped<ICustomerService, CustomerService>();
 
         services.AddLogging();
 

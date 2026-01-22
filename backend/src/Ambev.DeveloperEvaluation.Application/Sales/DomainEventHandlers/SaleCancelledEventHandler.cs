@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.DomainEventHandlers;
 
-public class SaleCancelledEventHandler : INotificationHandler<SaleCancelledDomainEvent>
+public class SaleCancelledEventHandler : IDomainEventHandler<SaleCancelledDomainEvent>
 {
     private readonly ILogger<SaleCancelledEventHandler> _logger;
     private readonly IIntegrationEventsDispatcher _dispatcher;

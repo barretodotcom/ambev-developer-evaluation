@@ -10,16 +10,12 @@ public sealed record CreateSaleRequest
     /// Must be not empty.
     /// </summary>
     public Guid CustomerId { get; init; }
-    /// <summary>
-    /// Gets or sets the customer name.
-    /// Must be not empty.
-    /// </summary>
-    public string CustomerName { get; set; } = string.Empty;
+
     /// <summary>
     /// Gets or sets the sale number
     /// Must be not empty and less than or equal current number.
     /// </summary>
-    public string SaleNumber { get; init; }
+    public string SaleNumber { get; init; } = string.Empty;
     /// <summary>
     /// Gets or sets the date the sale was made.
     /// Must be not empty and less than or equal current date.

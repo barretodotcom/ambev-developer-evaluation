@@ -1,6 +1,8 @@
+using Ambev.DeveloperEvaluation.Application.Abstractions.Commands;
 using Ambev.DeveloperEvaluation.Application.Abstractions.Transactions;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Services.Sales;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
@@ -11,9 +13,10 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 /// <summary>
 /// Handler for processing CreateSaleCommand requests
 /// </summary>
-public sealed class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleResult>
+public sealed class CreateSaleHandler : ICommandHandler<CreateSaleCommand, CreateSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
+    private readonly ICustomerService _customerService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
@@ -23,9 +26,10 @@ public sealed class CreateSaleHandler : IRequestHandler<CreateSaleCommand, Creat
     /// <param name="unitOfWork">The unit of work responsible for committing transactional changes.</param>
     /// <param name="saleRepository">The sale repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public CreateSaleHandler(ISaleRepository saleRepository, IUnitOfWork unitOfWork,IMapper mapper)
+    public CreateSaleHandler(ISaleRepository saleRepository, ICustomerService customerService, IUnitOfWork unitOfWork,IMapper mapper)
     {
         _saleRepository = saleRepository;
+        _customerService = customerService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -39,7 +43,11 @@ public sealed class CreateSaleHandler : IRequestHandler<CreateSaleCommand, Creat
     /// <returns>The created sale details</returns>
     public async Task<CreateSaleResult> Handle(CreateSaleCommand command, CancellationToken cancellationToken)
     {
-        var sale = new Sale(command.SaleNumber, command.CustomerId, command.CustomerName, command.SaleDate, command.BranchId, command.BranchName);
+        var customer = await _customerService.GetCustomerById(command.CustomerId, cancellationToken);
+        if (customer == null)
+            throw new DomainException("Customer not found");
+        
+        var sale = new Sale(command.SaleNumber, customer.Id, customer.Name, command.SaleDate, command.BranchId, command.BranchName);
 
         foreach (var saleItem in command.Items)
         {

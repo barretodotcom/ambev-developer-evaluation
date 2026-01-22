@@ -1,13 +1,11 @@
-using System.Net.Http.Json;
-using Ambev.DeveloperEvaluation.Application.Read.Sales.ReadModels;
-using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Domain.ValueObjects;
+using System.Security.Claims;
+using Ambev.DeveloperEvaluation.Functional.Auth;
 using Ambev.DeveloperEvaluation.ORM;
 using Bogus;
-using Xunit;
-using FluentAssertions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ApiProgram = Ambev.DeveloperEvaluation.WebApi.Program;
@@ -19,31 +17,56 @@ namespace Ambev.DeveloperEvaluation.Functional;
 /// of the Web API.
 /// </summary>
 /// <remarks>
-/// This class configures the application host for functional testing by:
-/// - Replacing the real database context with an in-memory database (<see cref="DefaultContext"/>)
-/// - Ensuring the database is created and ready before each test
-/// It enables tests to run in isolation without affecting real data or requiring external dependencies.
+/// Configures:
+/// - In-memory database for isolation
+/// - Default fake authentication
 /// </remarks>
 public class CustomWebApplicationFactory : WebApplicationFactory<ApiProgram>
 {
     private string DatabaseName = string.Empty;
+    private ClaimsPrincipal? _testUser;
     private static readonly Faker Faker = new();
 
+    /// <summary>
+    /// Sets the database name for the in-memory database.
+    /// </summary>
     public void UseDatabase(string databaseName)
     {
         DatabaseName = databaseName;
     }
 
     /// <summary>
-    /// Given a Web API host builder
-    /// When configuring the web host for functional testing
-    /// Then the real <see cref="DbContextOptions{DefaultContext}"/> is replaced
-    /// with an in-memory database and the database is initialized.
+    /// Sets a fake authenticated user for all tests. Uses a default if none is provided.
+    /// </summary>
+    public void UseTestAuthentication(ClaimsPrincipal? user = null)
+    {
+        _testUser = user ?? GetDefaultTestUser();
+    }
+
+    /// <summary>
+    /// Returns a default fake authenticated user with SalesManager role.
+    /// </summary>
+    private ClaimsPrincipal GetDefaultTestUser()
+    {
+        return new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.Name, "TestUser"),
+            new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.Role, "SalesManager")
+        }, "Test"));
+    }
+
+    /// <summary>
+    /// Configures the WebHost for tests:
+    /// - In-memory DbContext
+    /// - Authentication with TestAuthHandler
+    /// - Database initialization
     /// </summary>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>
         {
+            // Remove real DbContext
             var descriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(DbContextOptions<DefaultContext>));
             if (descriptor != null)
@@ -51,12 +74,24 @@ public class CustomWebApplicationFactory : WebApplicationFactory<ApiProgram>
 
             if (string.IsNullOrEmpty(DatabaseName))
                 throw new InvalidOperationException("No database name specified.");
-            
-            services.AddDbContext<DefaultContext>(options =>
-            {
-                options.UseInMemoryDatabase(DatabaseName);
-            });
 
+            // InMemory DbContext
+            services.AddDbContext<DefaultContext>(options =>
+                options.UseInMemoryDatabase(DatabaseName));
+
+            // Authentication fake
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "Test";
+                options.DefaultChallengeScheme = "Test";
+            })
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
+
+            // Register the user
+            if (_testUser != null)
+                services.AddSingleton(_testUser);
+
+            // Initialize database
             var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<DefaultContext>();

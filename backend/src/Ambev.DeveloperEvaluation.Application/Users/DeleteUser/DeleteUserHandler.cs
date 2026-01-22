@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Application.Abstractions.Commands;
 using MediatR;
 using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
@@ -7,7 +8,7 @@ namespace Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
 /// <summary>
 /// Handler for processing DeleteUserCommand requests
 /// </summary>
-public class DeleteUserHandler : IRequestHandler<DeleteUserCommand, DeleteUserResponse>
+public class DeleteUserHandler : ICommandHandler<DeleteUserCommand, DeleteUserResponse>
 {
     private readonly IUserRepository _userRepository;
 

@@ -22,7 +22,6 @@ public sealed class CreateSaleCommandValidator : AbstractValidator<CreateSaleCom
     public CreateSaleCommandValidator()
     {
         RuleFor(l => l.CustomerId).NotEmpty();
-        RuleFor(l => l.CustomerName).NotEmpty();
         
         RuleFor(l => l.BranchId).NotEmpty();
         RuleFor(l => l.BranchName).NotEmpty();

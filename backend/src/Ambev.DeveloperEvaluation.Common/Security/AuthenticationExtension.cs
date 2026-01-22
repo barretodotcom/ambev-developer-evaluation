@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ambev.DeveloperEvaluation.Common.Security
 {
@@ -39,7 +40,12 @@ namespace Ambev.DeveloperEvaluation.Common.Security
                         ClockSkew = TimeSpan.Zero
                     };
                 });
-
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
             return services;

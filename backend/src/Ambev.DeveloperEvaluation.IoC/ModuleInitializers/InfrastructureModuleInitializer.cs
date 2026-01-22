@@ -2,11 +2,13 @@
 using Ambev.DeveloperEvaluation.Application.Abstractions.Events;
 using Ambev.DeveloperEvaluation.Application.Read.Sales.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Services.Sales;
 using Ambev.DeveloperEvaluation.Messaging.EventBus;
 using Ambev.DeveloperEvaluation.Messaging.Outbox;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.ReadModel;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
+using Ambev.DeveloperEvaluation.ORM.Services.Sales;
 using Ambev.DeveloperEvaluation.ORM.Transactions;
 using Ambev.DeveloperEvaluation.ORM.UnitOfWork;
 using Azure.Messaging.ServiceBus;
@@ -23,6 +25,8 @@ public class InfrastructureModuleInitializer : IModuleInitializer
     {
         builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<DefaultContext>());
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        
+        builder.Services.AddScoped<ICustomerService, CustomerService>();
 
         builder.Services.AddScoped<ISaleRepository, SaleRepository>();
         builder.Services.AddScoped<ISaleReadRepository, SaleReadRepository>();

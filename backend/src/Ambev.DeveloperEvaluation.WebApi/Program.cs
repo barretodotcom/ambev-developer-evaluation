@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using FluentValidation;
 using Microsoft.Extensions.Azure;
+using Microsoft.OpenApi.Models;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -32,7 +33,41 @@ public class Program
             builder.Services.AddEndpointsApiExplorer();
 
             builder.AddBasicHealthChecks();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo()
+                {
+                    Title = "Ambev API",
+                    Version = "v1",
+                    Description = "API with JWT Authentication"
+                });
+
+                // Add JWT Bearer authentication
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
+            
             builder.Services.AddHostedService<OutboxProcessor>();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -41,7 +76,7 @@ public class Program
             {
                 throw new InvalidOperationException("DefaultConnection is not configured");
             }
-            
+
             builder.Services.AddDbContext<DefaultContext>((sp, options) =>
                 {
                     var mediator = sp.GetRequiredService<IMediator>();
@@ -58,7 +93,8 @@ public class Program
 
             builder.RegisterDependencies();
 
-            builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly, typeof(ApplicationReadLayer).Assembly);
+            builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly,
+                typeof(ApplicationReadLayer).Assembly);
 
             builder.Services.AddMediatR(cfg =>
             {

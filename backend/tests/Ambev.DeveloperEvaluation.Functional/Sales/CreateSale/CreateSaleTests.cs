@@ -46,7 +46,11 @@ public class CreateSaleSalesTests : IClassFixture<CustomWebApplicationFactory>
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<DefaultContext>();
 
-        var command = CreateSaleTestData.GenerateValidCommand();
+        var createdUser = CreateSaleTestData.GenerateUser();
+        await db.Users.AddAsync(createdUser);
+        await db.SaveChangesAsync();
+        
+        var command = CreateSaleTestData.GenerateValidCommand(createdUser.Id);
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/sales", command);
@@ -62,7 +66,6 @@ public class CreateSaleSalesTests : IClassFixture<CustomWebApplicationFactory>
         sale.SaleNumber.Should().Be(command.SaleNumber);
         sale.SaleNumber.Should().Be(command.SaleNumber);
         sale.CustomerId.Should().Be(command.CustomerId);
-        sale.CustomerName.Should().Be(command.CustomerName);
         sale.SaleDate.Should().Be(command.SaleDate);
         sale.BranchId.Should().Be(command.BranchId);
         sale.BranchName.Should().Be(command.BranchName);

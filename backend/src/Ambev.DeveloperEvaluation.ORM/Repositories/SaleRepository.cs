@@ -10,5 +10,12 @@ public class SaleRepository : Repository<Sale>, ISaleRepository
     {
         
     }
-    
+
+    public async Task<List<Sale>> GetByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken)
+    {
+        var query = DbSet.Where(l => l.CustomerId == customerId);
+
+        return await query.ToListAsync(cancellationToken);
+    }
+     
 }
